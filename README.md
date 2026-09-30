@@ -56,3 +56,17 @@ Backend and watcher extracted from Mesh-LLM/mesh-llm at
 `2129f4bb19862dfb425d27eaf9230cae90dbb850`, under `crates/mesh-wallet-lexe`.
 Original source license and copyright are preserved in LICENSE. Shared contract
 implementation is a dependency, not a copied fork.
+
+### Automated integration evidence
+
+On Unix, the full suite builds an archive containing the real plugin executable,
+installs it with mesh's `install_plugin_archive` into a temporary store, then
+launches the installed executable using a protocol host fixture. It verifies
+`wallet.v1` negotiation, no advertised MCP payment tools or HTTP bindings,
+structured `not_open` before opening a wallet, forced process death/restart and
+clean shutdown. This is real installer/process/IPC evidence, not a full mesh-node
+or paid-inference test. It never sends `wallet_open` or contacts Lexe services.
+
+The extracted backend retains the current Lexe data format and host-provided
+`payments/lexe` location, including `seedphrase.txt`. Optional adoption of old host
+provider pins is a separate follow-up, not a reason to change recovery material.

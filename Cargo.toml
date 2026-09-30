@@ -21,6 +21,10 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"
 tracing = "0.1"
 
 [dev-dependencies]
+mesh-llm-plugin-manager = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "51fd00a99806afa1bc1db0abbedc5d0702c9900b" }
+flate2 = "1"
+tar = "0.4"
+serde_json = "1"
 tempfile = "3"
 tokio = { version = "1", features = ["macros", "rt", "test-util"] }
 
