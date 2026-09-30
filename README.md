@@ -41,6 +41,12 @@ require separate authorization. Run `just clean` when verification is finished.
 
 The host supplies the wallet directory. Existing wallet migration is NOT in
 scope: do not delete or rewrite a provider pin to bypass identity checking.
+**Existing wallets pinned to `wallet-lexe` will not open with `lexe-wallet`.**
+Installing this plugin and restarting is not an upgrade path for those profiles:
+the host safely refuses the changed provider name, even though the seed and data
+format are unchanged. Fresh profiles are the draft's target. Safe, identity-checked
+pin adoption remains a follow-up; before a first release, either implement and
+validate it or explicitly qualify that release for fresh/unpinned profiles only.
 The backend retains its directory lock and protects its plaintext recovery seed
 with Unix permissions. Back up that seed securely; do not put it in plugin
 packages, logs or repositories. Windows permissions need platform validation.
@@ -54,8 +60,16 @@ code, not a sandbox. Do not enable two wallet providers for the same profile.
 
 Backend and watcher extracted from Mesh-LLM/mesh-llm at
 `2129f4bb19862dfb425d27eaf9230cae90dbb850`, under `crates/mesh-wallet-lexe`.
-Original source license and copyright are preserved in LICENSE. Shared contract
-implementation is a dependency, not a copied fork.
+The dependency baseline is `51fd00a99806afa1bc1db0abbedc5d0702c9900b`;
+the extracted backend and shared contract sources are unchanged between these
+commits. The extraction revision records where the files were copied from, not a
+second protocol version. Shared contract implementation is a dependency, not a
+copied fork. Git dependencies require fetching the mesh repository; registry
+publication of this crate is not currently supported.
+
+The copied LICENSE contains Apache-2.0; upstream Cargo metadata declares
+`MIT OR Apache-2.0`. That inherited licensing discrepancy needs resolution before
+publication; this draft does not supply a missing MIT grant.
 
 ### Automated integration evidence
 
@@ -66,6 +80,12 @@ launches the installed executable using a protocol host fixture. It verifies
 structured `not_open` before opening a wallet, forced process death/restart and
 clean shutdown. This is real installer/process/IPC evidence, not a full mesh-node
 or paid-inference test. It never sends `wallet_open` or contacts Lexe services.
+Consequently it does not prove wallet-open behavior, cross-process directory
+locking, the host's `PluginWalletFactory` lifecycle, post-submission recovery,
+missing/disabled provider handling, or Windows packaging/transport. The startup
+filesystem assertion only checks the temporary HOME; it is not evidence about
+writes to a host-supplied wallet directory. Contract compatibility with newer host
+revisions still requires explicit validation.
 
 The extracted backend retains the current Lexe data format and host-provided
 `payments/lexe` location, including `seedphrase.txt`. Optional adoption of old host
