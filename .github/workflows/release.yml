@@ -1,0 +1,87 @@
+name: Release wallet
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish this commit as the version declared in Cargo.toml and plugin.toml
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: wallet-release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - runner: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - runner: windows-2022
+            target: x86_64-pc-windows-msvc
+          - runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable action
+        with:
+          toolchain: 1.97.0
+          components: rustfmt, clippy
+      - uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b # v3
+        with:
+          just-version: 1.58.0
+      - name: Check, test and package native wallet
+        shell: bash
+        env:
+          EXPECTED_TARGET: ${{ matrix.target }}
+          MACOSX_DEPLOYMENT_TARGET: '13.3'
+        run: |
+          set -euo pipefail
+          just check
+          just test
+          just package
+          just verify-package "$EXPECTED_TARGET"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wallet-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 7
+      - name: Clean compiler output
+        if: always()
+        shell: bash
+        run: just clean
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: wallet-*
+          path: dist
+          merge-multiple: true
+      - name: Verify complete asset set and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 scripts/release.py
