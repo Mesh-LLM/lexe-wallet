@@ -1,3 +1,5 @@
+# Note: still work in progress, not usable yet. 
+
 # Lexe wallet for mesh-llm
 
 Standalone `wallet.v1` plugin, with a reusable `mesh-wallet-lexe` library for
