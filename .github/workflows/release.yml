@@ -43,10 +43,27 @@ jobs:
         with:
           toolchain: 1.97.0
           components: rustfmt, clippy
-      - uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b # v3
+      - if: matrix.target != 'aarch64-pc-windows-msvc'
+        uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b # v3
         with:
           just-version: 1.58.0
+      - name: Install just on Windows ARM64
+        if: matrix.target == 'aarch64-pc-windows-msvc'
+        shell: pwsh
+        run: |
+          $base = "https://github.com/casey/just/releases/download/1.58.0"
+          $asset = "just-1.58.0-aarch64-pc-windows-msvc.zip"
+          Invoke-WebRequest "$base/$asset" -OutFile "$env:RUNNER_TEMP/$asset"
+          Invoke-WebRequest "$base/SHA256SUMS" -OutFile "$env:RUNNER_TEMP/SHA256SUMS"
+          $line = Get-Content "$env:RUNNER_TEMP/SHA256SUMS" | Where-Object { $_ -match " $([regex]::Escape($asset))$" }
+          if (-not $line) { throw "Missing just checksum" }
+          $expected = ($line -split '\s+')[0]
+          $actual = (Get-FileHash "$env:RUNNER_TEMP/$asset" -Algorithm SHA256).Hash
+          if ($actual -ne $expected) { throw "just checksum mismatch" }
+          Expand-Archive "$env:RUNNER_TEMP/$asset" "$env:RUNNER_TEMP/just"
+          "$env:RUNNER_TEMP/just" | Out-File -FilePath $env:GITHUB_PATH -Append
       - name: Check, test and package native wallet
+        id: wallet-build
         shell: bash
         env:
           EXPECTED_TARGET: ${{ matrix.target }}
@@ -65,7 +82,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Clean compiler output
-        if: always()
+        if: always() && steps.wallet-build.outcome != 'skipped'
         shell: bash
         run: just clean
   publish:
