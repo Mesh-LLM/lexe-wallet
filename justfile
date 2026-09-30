@@ -10,3 +10,5 @@ clean:
     cargo clean
 package: build
     python3 scripts/package.py
+verify-package target:
+    python3 scripts/release.py --verify {{target}}

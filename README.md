@@ -1,4 +1,4 @@
-# Lexe wallet for mesh-llm (draft)
+# Lexe wallet for mesh-llm
 
 Standalone `wallet.v1` plugin, with a reusable `mesh-wallet-lexe` library for
 future opt-in build-time embedding. Mesh retains budgets, ledger and recovery.
@@ -24,7 +24,9 @@ Use `just check`, `just test`, `just build`, and `just package`. Shared protocol
 crates are pinned to mesh source commit `51fd00a99806afa1bc1db0abbedc5d0702c9900b`.
 The Lexe SDK remains pinned to 0.1.24. `just package` packages the native host
 platform only; other targets must be built and validated on their platforms.
-No release automation or cross-platform qualification is claimed yet.
+The on-demand release workflow builds and tests native macOS, Linux and Windows
+archives. See [RELEASING.md](RELEASING.md) for dispatch and manual instructions.
+Native build coverage does not imply live wallet qualification on each platform.
 
 Local archive installation for an isolated test profile:
 
@@ -67,9 +69,9 @@ second protocol version. Shared contract implementation is a dependency, not a
 copied fork. Git dependencies require fetching the mesh repository; registry
 publication of this crate is not currently supported.
 
-The copied LICENSE contains Apache-2.0; upstream Cargo metadata declares
-`MIT OR Apache-2.0`. That inherited licensing discrepancy needs resolution before
-publication; this draft does not supply a missing MIT grant.
+The extracted code is distributed under Apache-2.0, selecting the Apache-2.0
+option from upstream’s `MIT OR Apache-2.0` declaration. The upstream Apache
+LICENSE is retained unchanged; this repository does not claim a missing MIT grant.
 
 ### Automated integration evidence
 
