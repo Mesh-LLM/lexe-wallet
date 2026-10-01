@@ -43,14 +43,10 @@ require separate authorization. Run `just clean` when verification is finished.
 
 ## State and safety
 
-The host supplies the wallet directory. Existing wallet migration is NOT in
-scope: do not delete or rewrite a provider pin to bypass identity checking.
-**Existing wallets pinned to `wallet-lexe` will not open with `lexe-wallet`.**
-Installing this plugin and restarting is not an upgrade path for those profiles:
-the host safely refuses the changed provider name, even though the seed and data
-format are unchanged. Fresh profiles are the draft's target. Safe, identity-checked
-pin adoption remains a follow-up; before a first release, either implement and
-validate it or explicitly qualify that release for fresh/unpinned profiles only.
+The host supplies the wallet directory (`payments/wallets/lexe-wallet/`). Do not
+delete or hand-edit a provider pin to get around the identity check.
+Profiles pinned to the former built-in `wallet-lexe` will not open with
+`lexe-wallet`; the host refuses the changed provider name.
 The backend retains its directory lock and protects its plaintext recovery seed
 with Unix permissions. Back up that seed securely; do not put it in plugin
 packages, logs or repositories. Windows permissions need platform validation.
@@ -91,6 +87,10 @@ filesystem assertion only checks the temporary HOME; it is not evidence about
 writes to a host-supplied wallet directory. Contract compatibility with newer host
 revisions still requires explicit validation.
 
-The extracted backend retains the current Lexe data format and host-provided
-`payments/lexe` location, including `seedphrase.txt`. Optional adoption of old host
+The extracted backend retains the current Lexe data format, including
+`seedphrase.txt`. Hosts with mesh-llm#2133 give each wallet plugin its own
+directory, so this plugin runs in `payments/wallets/lexe-wallet/` (older hosts
+used `payments/lexe/`). To keep a funded test wallet, copy `seedphrase.txt` into
+the new directory before first start and run `mesh-llm wallet unpin` if the
+ledger is pinned to the old name. Optional adoption of old host
 provider pins is a separate follow-up, not a reason to change recovery material.
