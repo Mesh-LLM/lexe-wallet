@@ -87,6 +87,10 @@ filesystem assertion only checks the temporary HOME; it is not evidence about
 writes to a host-supplied wallet directory. Contract compatibility with newer host
 revisions still requires explicit validation.
 
-The extracted backend retains the current Lexe data format and host-provided
-`payments/lexe` location, including `seedphrase.txt`. Optional adoption of old host
+The extracted backend retains the current Lexe data format, including
+`seedphrase.txt`. Hosts with mesh-llm#2133 give each wallet plugin its own
+directory, so this plugin runs in `payments/wallets/lexe-wallet/` (older hosts
+used `payments/lexe/`). To keep a funded test wallet, copy `seedphrase.txt` into
+the new directory before first start and run `mesh-llm wallet unpin` if the
+ledger is pinned to the old name. Optional adoption of old host
 provider pins is a separate follow-up, not a reason to change recovery material.
