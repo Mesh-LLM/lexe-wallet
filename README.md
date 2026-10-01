@@ -39,14 +39,16 @@ require separate authorization. Run `just clean` when verification is finished.
 
 ## State and safety
 
-The host supplies the wallet directory. Existing wallet migration is NOT in
-scope: do not delete or rewrite a provider pin to bypass identity checking.
-**Existing wallets pinned to `wallet-lexe` will not open with `lexe-wallet`.**
-Installing this plugin and restarting is not an upgrade path for those profiles:
-the host safely refuses the changed provider name, even though the seed and data
-format are unchanged. Fresh profiles are the draft's target. Safe, identity-checked
-pin adoption remains a follow-up; before a first release, either implement and
-validate it or explicitly qualify that release for fresh/unpinned profiles only.
+The host supplies the wallet directory (`payments/wallets/lexe-wallet/`). Do not
+delete or hand-edit a provider pin to get around the identity check.
+**Existing wallets pinned to the former built-in `wallet-lexe` do not open with
+`lexe-wallet` as-is**, because the host refuses a changed provider name even
+though the seed and data format are the same. Follow the migration steps in
+mesh-llm `docs/specs/lightning-payments.md` ("Migrating from the former built-in
+`wallet-lexe`"): settle outstanding work on the old binary, copy (do not move or
+overwrite) the seed, `wallet unpin`, and update `[payments] wallet`. They were
+validated live on two real profiles written by the built-in wallet; the
+`wallet_id` was preserved.
 The backend retains its directory lock and protects its plaintext recovery seed
 with Unix permissions. Back up that seed securely; do not put it in plugin
 packages, logs or repositories. Windows permissions need platform validation.
