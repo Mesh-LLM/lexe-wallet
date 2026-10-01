@@ -14,14 +14,14 @@ async-trait = "0.1"
 fs2 = "0.4"
 lexe = { version = "=0.1.24", features = ["unstable"] }
 lexe-api-core = { version = "=0.1.24" }
-mesh-llm-plugin = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "937673f81dc272c1e5afe4ea36c32398df269073" }
-mesh-llm-wallet = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "937673f81dc272c1e5afe4ea36c32398df269073", features = ["plugin-server"] }
+mesh-llm-plugin = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "bd5514dd8de8db64d42975d04de0b0ad0583c7ba" }
+mesh-llm-wallet = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "bd5514dd8de8db64d42975d04de0b0ad0583c7ba", features = ["plugin-server"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
 tracing = "0.1"
 
 [dev-dependencies]
-mesh-llm-plugin-manager = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "937673f81dc272c1e5afe4ea36c32398df269073" }
+mesh-llm-plugin-manager = { git = "https://github.com/Mesh-LLM/mesh-llm", rev = "bd5514dd8de8db64d42975d04de0b0ad0583c7ba" }
 flate2 = "1"
 tar = "0.4"
 serde_json = "1"

@@ -1816,7 +1816,7 @@ checksum = "cf8baf1c55e62ffcace7a9f06f4bd9cd3f0c4beb022d3b367256b91b87513d98"
 [[package]]
 name = "mesh-llm-plugin"
 version = "0.77.0"
-source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=937673f81dc272c1e5afe4ea36c32398df269073#937673f81dc272c1e5afe4ea36c32398df269073"
+source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=bd5514dd8de8db64d42975d04de0b0ad0583c7ba#bd5514dd8de8db64d42975d04de0b0ad0583c7ba"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1833,7 +1833,7 @@ dependencies = [
 [[package]]
 name = "mesh-llm-plugin-manager"
 version = "0.77.0"
-source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=937673f81dc272c1e5afe4ea36c32398df269073#937673f81dc272c1e5afe4ea36c32398df269073"
+source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=bd5514dd8de8db64d42975d04de0b0ad0583c7ba#bd5514dd8de8db64d42975d04de0b0ad0583c7ba"
 dependencies = [
  "anyhow",
  "dirs",
@@ -1853,7 +1853,7 @@ dependencies = [
 [[package]]
 name = "mesh-llm-skills"
 version = "0.77.0"
-source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=937673f81dc272c1e5afe4ea36c32398df269073#937673f81dc272c1e5afe4ea36c32398df269073"
+source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=bd5514dd8de8db64d42975d04de0b0ad0583c7ba#bd5514dd8de8db64d42975d04de0b0ad0583c7ba"
 dependencies = [
  "anyhow",
  "dirs",
@@ -1864,7 +1864,7 @@ dependencies = [
 [[package]]
 name = "mesh-llm-wallet"
 version = "0.77.0"
-source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=937673f81dc272c1e5afe4ea36c32398df269073#937673f81dc272c1e5afe4ea36c32398df269073"
+source = "git+https://github.com/Mesh-LLM/mesh-llm?rev=bd5514dd8de8db64d42975d04de0b0ad0583c7ba#bd5514dd8de8db64d42975d04de0b0ad0583c7ba"
 dependencies = [
  "anyhow",
  "async-trait",
