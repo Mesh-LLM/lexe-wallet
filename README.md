@@ -1,20 +1,68 @@
-# Note: still work in progress, not usable yet. 
-
 # Lexe wallet for mesh-llm
 
 Standalone `wallet.v1` plugin, with a reusable `mesh-wallet-lexe` library for
 future opt-in build-time embedding. Mesh retains budgets, ledger and recovery.
 
-## Intended installation after GitHub release publication
+> [!WARNING]
+> This wallet is an example under exploration. Opening it can provision a mainnet
+> wallet; sending moves real money. Protect recovery material and use small amounts.
+
+## Install the external plugin
 
 ```sh
 mesh-llm plugins install Mesh-LLM/lexe-wallet
 ```
 
 Restart your normal mesh node. Installed, enabled plugins are discovered by the
-host. Use a mesh build with payments enabled and built-in Lexe disabled (PR
-#2121). No manual command path is needed. This repository is currently a draft:
-there is no published GitHub release to install yet.
+host. MeshLLM v0.78.0 includes the payment infrastructure and uses external
+wallet plugins; Lexe wallet v0.1.0 is available in this repository's releases.
+No manual executable path or built-in Lexe feature is needed. Check the release
+assets for your platform; a packaged target is not proof of live-money qualification.
+
+Choose the profile **before the first wallet operation**. An explicit
+`--config /absolute/path/payer/config.toml` stores payment state in
+`/absolute/path/payer/payments/`, not under a separately changed HOME. The host
+supplies `payments/wallets/lexe-wallet/` to this plugin. Keep the same config path
+on the node and all wallet commands. An optional explicit selection is:
+
+```toml
+[payments]
+wallet = "lexe-wallet"
+```
+
+Start the node, then run wallet commands in another terminal:
+
+```sh
+CONFIG="/absolute/path/payer/config.toml" # existing, selected config
+mesh-llm --config "$CONFIG" client --console 3131
+```
+
+```sh
+CONFIG="/absolute/path/payer/config.toml"
+mesh-llm --config "$CONFIG" wallet --port 3131 policy
+mesh-llm --config "$CONFIG" wallet --port 3131 get-balance
+# Only if funding is needed: create an invoice, then pay it from another wallet.
+mesh-llm --config "$CONFIG" wallet --port 3131 fund-wallet --amount-sats 1000
+mesh-llm --config "$CONFIG" wallet --port 3131 get-transactions --limit 20
+# Optional: explicitly authorize automatic paid inference within this budget.
+mesh-llm --config "$CONFIG" wallet --port 3131 policy --mode automatic --daily-budget-sats 100
+# Disable new automatic inference spending again.
+mesh-llm --config "$CONFIG" wallet --port 3131 policy --mode free-only
+```
+
+A fresh profile is free-only. Funding does not authorize inference spending;
+`fund-wallet` only creates an invoice, and 1 sat equals 1,000 msat. The policy
+persists across restarts. An explicit send separately authorizes payment:
+
+```sh
+mesh-llm --config "$CONFIG" wallet --port 3131 send 'lnbc...' --max-fee-msat 1000
+# Amount-less invoices additionally require --amount-msat AMOUNT.
+```
+
+Replace the invoice only when ready to pay. Wallet-dependent commands require
+the running node. `--port` is its management port, not the OpenAI port. Explicit
+`--config` checks that the API is using the intended payment directory. Even
+`get-balance` can provision a wallet, so read the state checks below first.
 
 The host supplies `MESH_LLM_PLUGIN_NAME`, `MESH_LLM_PLUGIN_ENDPOINT` and transport.
 The plugin advertises `wallet.v1`, not MCP payment tools. Installation/startup
@@ -43,14 +91,27 @@ require separate authorization. Run `just clean` when verification is finished.
 
 ## State and safety
 
-The host supplies the wallet directory. Existing wallet migration is NOT in
-scope: do not delete or rewrite a provider pin to bypass identity checking.
-**Existing wallets pinned to `wallet-lexe` will not open with `lexe-wallet`.**
-Installing this plugin and restarting is not an upgrade path for those profiles:
-the host safely refuses the changed provider name, even though the seed and data
-format are unchanged. Fresh profiles are the draft's target. Safe, identity-checked
-pin adoption remains a follow-up; before a first release, either implement and
-validate it or explicitly qualify that release for fresh/unpinned profiles only.
+The host supplies the wallet directory. Do not delete or rewrite a provider pin
+to bypass identity checking. **Existing wallets pinned to `wallet-lexe` will not
+open with `lexe-wallet`.** Installing this plugin is not an automatic migration
+for those profiles; the provider name differs even if the seed format is the same.
+
+For an existing profile already pinned to **`lexe-wallet`**, stop that profile's
+node and wallet writer, then privately back up the config and entire `payments/`
+directory (ledger, SQLite sidecars, pin and wallet material). Keep the existing
+pin and ledger unchanged. Use `payments/wallets/lexe-wallet/` if it already exists.
+If the same external-wallet profile still stores its wallet in `payments/lexe/`,
+move that whole wallet directory to the current destination only while stopped
+and only if the destination does not exist. Do not merge two directories. Verify
+the expected recovery files and private permissions **before** opening it.
+
+If both paths exist, the pin is absent, or its identity/provider is unexpected,
+stop and resolve the provenance. Do not use `wallet unpin` as an adoption shortcut.
+A wrong or empty directory can provision a new wallet before the host compares
+its identity with the pin. Restart with the same config, verify known history,
+balance, policy and pending records, and stop on any mismatch rather than funding
+an unexpected empty wallet. No migration tooling is implemented by this README.
+
 The backend retains its directory lock and protects its plaintext recovery seed
 with Unix permissions. Back up that seed securely; do not put it in plugin
 packages, logs or repositories. Windows permissions need platform validation.
@@ -91,6 +152,8 @@ filesystem assertion only checks the temporary HOME; it is not evidence about
 writes to a host-supplied wallet directory. Contract compatibility with newer host
 revisions still requires explicit validation.
 
-The extracted backend retains the current Lexe data format and host-provided
-`payments/lexe` location, including `seedphrase.txt`. Optional adoption of old host
-provider pins is a separate follow-up, not a reason to change recovery material.
+The extracted backend retains the Lexe data format, including `seedphrase.txt`.
+The current host supplies `payments/wallets/lexe-wallet/`; the historical
+`payments/lexe/` path is not a default for new profiles. Directory preservation
+for an already matching external-wallet pin is distinct from switching a former
+built-in provider pin; neither is a reason to change recovery material.
