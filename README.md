@@ -4,6 +4,12 @@ Standalone `wallet.v1` plugin, with a reusable `mesh-wallet-lexe` library for
 future opt-in build-time embedding. Mesh retains budgets, ledger and recovery.
 
 > [!WARNING]
+> **Preview / early access.** Paid inference and this wallet are experimental.
+> The mesh payment wire protocol may change between releases without a version
+> bump or backwards compatibility: paid requests can fail (typically as a
+> retryable 503) unless buyer and seller run the same mesh-llm release. Free
+> inference is unaffected.
+>
 > This wallet is an example under exploration. Opening it can provision a mainnet
 > wallet; sending moves real money. Protect recovery material and use small amounts.
 
